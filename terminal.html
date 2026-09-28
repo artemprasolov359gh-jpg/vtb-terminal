@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ВТБ · Терминал</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f5f7fa;
+    color: #1a1f2b;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .topbar {
+    background: #ffffff;
+    border-bottom: 1px solid #dddddd;
+    padding: 8px 10px;
+    width: 100%;
+  }
+  .logo {
+    background: #0a2d8a;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .status {
+    float: right;
+    font-size: 12px;
+    color: #888888;
+    padding-top: 7px;
+  }
+  .status.on { color: #21a038; font-weight: bold; }
+  .status.off { color: #e5443b; font-weight: bold; }
+  .content {
+    padding: 14px 8px;
+    width: 100%;
+  }
+  .center {
+    margin: 0 auto;
+    text-align: center;
+    width: 94%;
+    max-width: 320px;
+  }
+  h1 {
+    font-size: 19px;
+    margin: 10px 0 6px;
+    font-weight: bold;
+    text-align: center;
+  }
+  p.sub {
+    font-size: 13px;
+    color: #888888;
+    margin: 6px 0 16px;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .brand-box {
+    background: #0a2d8a;
+    color: #ffffff;
+    width: 76px;
+    height: 56px;
+    line-height: 56px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 22px;
+    margin: 12px auto 18px;
+    border-radius: 12px;
+  }
+  input.code {
+    width: 100%;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 12px 4px;
+    border: 2px solid #cccccc;
+    border-radius: 10px;
+    text-align: center;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #0a2d8a;
+    background: #ffffff;
+    margin: 0 0 12px 0;
+    display: block;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+  }
+  input.code:focus {
+    border-color: #0a2d8a;
+    outline: none;
+  }
+  button.btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #0a2d8a;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    display: block;
+    margin: 0 0 8px 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  button.btn:active {
+    background: #082467;
+  }
+  button.key {
+    width: 66px;
+    height: 58px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #ffffff;
+    color: #1a1f2b;
+    border: 2px solid #dddddd;
+    border-radius: 10px;
+    margin: 3px;
+    padding: 0;
+    vertical-align: top;
+    -webkit-appearance: none;
+    cursor: pointer;
+  }
+  button.key:active {
+    background: #e6edfc;
+    border-color: #0a2d8a;
+  }
+  button.key.fn {
+    font-size: 14px;
+    color: #888888;
+  }
+  .pin-dots {
+    margin: 16px 0;
+    font-size: 34px;
+    letter-spacing: 8px;
+    color: #0a2d8a;
+    font-weight: bold;
+    text-align: center;
+    min-height: 42px;
+  }
+  .icon-big {
+    width: 90px;
+    height: 90px;
+    line-height: 90px;
+    border-radius: 50%;
+    background: #e6edfc;
+    text-align: center;
+    font-size: 44px;
+    margin: 14px auto;
+  }
+  .amount {
+    font-size: 30px;
+    font-weight: bold;
+    color: #0a2d8a;
+    margin: 14px 0;
+    text-align: center;
+  }
+  .success-icon {
+    width: 76px;
+    height: 76px;
+    line-height: 76px;
+    border-radius: 50%;
+    background: #21a038;
+    color: #ffffff;
+    font-size: 40px;
+    text-align: center;
+    margin: 16px auto;
+  }
+  .toast {
+    position: fixed;
+    bottom: 16px;
+    left: 4%;
+    width: 92%;
+    background: #1a1f2b;
+    color: #ffffff;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    display: none;
+    box-sizing: border-box;
+  }
+  .toast.show { display: block; }
+  .toast.err { background: #e5443b; }
+  .keypad {
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="logo">ВТБ</span>
+  <span class="status off" id="connStatus">Не подключён</span>
+</div>
+
+<div class="content" id="content">
+  <div class="center">
+    <div class="brand-box">ВТБ</div>
+    <h1>Загрузка...</h1>
+    <p class="sub">Пожалуйста, подождите</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+var firebaseConfig = {
+  apiKey: "AIzaSyCbUVpD7AIxh2ZBkAmZGOj7EXNWLpIL_8",
+  authDomain: "vtb-operator.firebaseapp.com",
+  databaseURL: "https://vtb-operator-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "vtb-operator",
+  storageBucket: "vtb-operator.firebasestorage.app",
+  messagingSenderId: "297366565046",
+  appId: "1:297366565046:web:c33f3fd1e88c2fc3e3b617"
+};
+
+var sessionCode = null;
+var db = null;
+var currentPin = '';
+var pinStep = 0;
+var pinTemp = '';
+var currentRequest = null;
+
+function get(id) { return document.getElementById(id); }
+
+function toast(text, cls) {
+  var t = get('toast');
+  t.innerHTML = text;
+  t.className = 'toast show ' + (cls || '');
+  setTimeout(function() { t.className = 'toast'; }, 2500);
+}
+
+function setStatus(online, text) {
+  var s = get('connStatus');
+  s.innerHTML = text;
+  s.className = 'status ' + (online ? 'on' : 'off');
+}
+
+function setContent(html) {
+  get('content').innerHTML = '<div class="center">' + html + '</div>';
+}
+
+function initFirebase() {
+  if (typeof firebase === 'undefined') {
+    setTimeout(initFirebase, 500);
+    return;
+  }
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    showCodeScreen();
+  } catch (e) {
+    setContent(
+      '<div class="brand-box">ВТБ</div>' +
+      '<h1>Ошибка</h1>' +
+      '<p class="sub">' + e.message + '</p>'
+    );
+  }
+}
+
+function showCodeScreen() {
+  setStatus(false, 'Не подключён');
+  setContent(
+    '<div class="brand-box">ВТБ</div>' +
+    '<h1>Введите код</h1>' +
+    '<p class="sub">Код показан на ПК операциониста</p>' +
+    '<input class="code" id="codeInput" maxlength="9" placeholder="XXXX-XXXX">' +
+    '<button class="btn" onclick="connect()">Подключиться</button>'
+  );
+}
+
+function connect() {
+  var inp = get('codeInput');
+  if (!inp) return;
+  var code = inp.value.replace(/\s/g, '').toUpperCase();
+  if (code.length < 4) { toast('Введите код', 'err'); return; }
+  sessionCode = code;
+  setStatus(true, 'Подключение...');
+
+  var sessionRef = db.ref('sessions/' + sessionCode);
+  var reqRef = sessionRef.child('request');
+
+  sessionRef.child('terminalOnline').set(true);
+  sessionRef.child('terminalOnline').onDisconnect().set(false);
+
+  reqRef.on('value', function(snap) {
+    var r = snap.val();
+    if (!r) return;
+    handleRequest(r);
+  });
+
+  setStatus(true, 'Связь с ПК');
+  screenWait();
+}
+
+function sendResponse(type, data) {
+  if (!db || !sessionCode) return;
+  var payload = { type: type, ts: Date.now() };
+  if (data) for (var k in data) payload[k] = data[k];
+  db.ref('sessions/' + sessionCode + '/response').set(payload);
+}
+
+function handleRequest(r) {
+  currentRequest = r;
+  if (r.type === 'issue-card') {
+    pinStep = 1; currentPin = ''; pinTemp = '';
+    screenPin('Придумайте ПИН', 'Шаг 1 из 2 — новый ПИН');
+  } else if (r.type === 'payment') {
+    screenPayment(r.sum);
+  } else if (r.type === 'change-pin') {
+    pinStep = 1; currentPin = ''; pinTemp = '';
+    screenPin('Старый ПИН', 'Шаг 1 — старый ПИН');
+  } else if (r.type === 'transfer') {
+    screenConfirm('Перевод', r.sum + ' ₽ на ' + r.to);
+  } else if (r.type === 'withdraw') {
+    screenConfirm('Выдача наличных', r.sum + ' ₽');
+  }
+}
+
+function screenWait() {
+  setContent(
+    '<div class="icon-big">&#127974;</div>' +
+    '<h1>Ожидание операции</h1>' +
+    '<p class="sub">Операционист подготовит запрос.<br>Подождите...</p>'
+  );
+}
+
+function screenPin(title, subtitle) {
+  currentPin = '';
+  var keys = '';
+  var i;
+  for (i = 1; i <= 9; i++) {
+    keys += '<button class="key" onclick="pinPress(' + i + ')">' + i + '</button>';
+  }
+  keys += '<button class="key fn" onclick="pinClear()">C</button>';
+  keys += '<button class="key" onclick="pinPress(0)">0</button>';
+  keys += '<button class="key fn" onclick="pinBack()">&#9003;</button>';
+
+  setContent(
+    '<h1>' + title + '</h1>' +
+    '<p class="sub">' + subtitle + '</p>' +
+    '<div class="pin-dots" id="pinDots">_ _ _ _</div>' +
+    '<div class="keypad">' + keys + '</div>'
+  );
+}
+
+function pinPress(n) {
+  if (currentPin.length >= 4) return;
+  currentPin += '' + n;
+  updateDots();
+  if (currentPin.length === 4) setTimeout(pinComplete, 250);
+}
+function pinBack() {
+  currentPin = currentPin.substring(0, currentPin.length - 1);
+  updateDots();
+}
+function pinClear() {
+  currentPin = '';
+  updateDots();
+}
+function updateDots() {
+  var d = get('pinDots');
+  if (!d) return;
+  var s = '';
+  var i;
+  for (i = 0; i < 4; i++) {
+    s += (i < currentPin.length) ? '&#9679;' : '_';
+    s += ' ';
+  }
+  d.innerHTML = s;
+}
+
+function pinComplete() {
+  if (pinStep === 1) {
+    if (currentRequest.type === 'issue-card') {
+      pinTemp = currentPin; currentPin = ''; pinStep = 2;
+      screenPin('Повторите ПИН', 'Шаг 2 из 2 — повторите ПИН');
+    } else if (currentRequest.type === 'change-pin') {
+      pinTemp = currentPin; currentPin = ''; pinStep = 2;
+      screenPin('Новый ПИН', 'Шаг 2 — новый ПИН');
+    }
+    return;
+  }
+  if (pinStep === 2) {
+    if (currentRequest.type === 'issue-card') {
+      if (currentPin !== pinTemp) {
+        toast('ПИН не совпали', 'err');
+        sendResponse('pin-error');
+        pinStep = 1; currentPin = ''; pinTemp = '';
+        screenPin('Придумайте ПИН', 'Попробуйте снова');
+        return;
+      }
+      sendResponse('pin-set');
+      screenSuccess('ПИН установлен', 'Передайте устройство операционисту');
+      return;
+    }
+    if (currentRequest.type === 'change-pin') {
+      pinTemp = currentPin; currentPin = ''; pinStep = 3;
+      screenPin('Повторите ПИН', 'Шаг 3 — повторите новый ПИН');
+      return;
+    }
+  }
+  if (pinStep === 3) {
+    if (currentPin !== pinTemp) {
+      toast('ПИН не совпали', 'err');
+      sendResponse('pin-error');
+      pinStep = 2; currentPin = '';
+      screenPin('Новый ПИН', 'Попробуйте снова');
+      return;
+    }
+    sendResponse('pin-set');
+    screenSuccess('ПИН изменён', 'Передайте устройство операционисту');
+  }
+}
+
+function screenPayment(sum) {
+  setContent(
+    '<div class="icon-big">&#128242;</div>' +
+    '<h1>Приложите карту</h1>' +
+    '<p class="sub">К оплате</p>' +
+    '<div class="amount">' + Number(sum).toLocaleString('ru-RU') + ' &#8381;</div>' +
+    '<p class="sub">Или телефон с NFC</p>' +
+    '<button class="btn" onclick="cardAttached()">Карта приложена</button>'
+  );
+}
+function cardAttached() {
+  sendResponse('card-attached');
+  screenSuccess('Оплата прошла', 'Спасибо! Средства списаны.');
+}
+
+function screenConfirm(title, subtitle) {
+  setContent(
+    '<div class="icon-big">&#10003;</div>' +
+    '<h1>' + title + '</h1>' +
+    '<p class="sub">' + subtitle + '</p>' +
+    '<button class="btn" onclick="confirmOperation()">Подтвердить</button>'
+  );
+}
+function confirmOperation() {
+  sendResponse('operation-confirmed');
+  screenSuccess('Подтверждено', 'Операция выполнена');
+}
+
+function screenSuccess(title, subtitle) {
+  setContent(
+    '<div class="success-icon">&#10003;</div>' +
+    '<h1>' + title + '</h1>' +
+    '<p class="sub">' + subtitle + '</p>' +
+    '<button class="btn" onclick="screenWait()">Готово</button>'
+  );
+}
+
+setTimeout(initFirebase, 500);
+</script>
+</body>
+</html>
