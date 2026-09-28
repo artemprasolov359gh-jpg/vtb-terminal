@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ВТБ · Операционист (ПК)</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--blue:#0a2d8a;--blue2:#0d47c4;--blueL:#e6edfc;--bg:#f5f7fa;--card:#fff;--bd:#e6eaf0;--tx:#1a1f2b;--mu:#8a95a5;--rd:#e5443b;--gn:#21a038;--or:#f5a623}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding:16px}
+.wrap{max-width:1400px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;background:var(--card);border-radius:14px;padding:14px 20px;border:1px solid var(--bd);margin-bottom:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.logo .mark{width:50px;height:38px;border-radius:9px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px}
+.logo .mark::before{content:"≡";margin-right:4px;font-size:19px}
+.conn{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.conn .dot{width:10px;height:10px;border-radius:50%;background:#ccc}
+.conn.on .dot{background:var(--gn);box-shadow:0 0 0 4px rgba(33,160,56,.2)}
+.conn.off .dot{background:var(--rd);box-shadow:0 0 0 4px rgba(229,68,59,.2)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border-radius:14px;padding:18px;border:1px solid var(--bd);margin-bottom:14px}
+.card-title{font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+h1{font-size:20px;margin-bottom:4px}
+.sub{font-size:12.5px;color:var(--mu);margin-bottom:14px;line-height:1.5}
+label{display:block;font-size:11.5px;font-weight:600;color:var(--mu);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+input,select{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--bd);background:var(--card);font-size:14px;outline:none;margin-bottom:10px;font-family:inherit}
+input:focus,select:focus{border-color:var(--blue)}
+.btn{display:block;width:100%;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;background:var(--blue);color:#fff;cursor:pointer;margin-bottom:6px;font-family:inherit}
+.btn:hover{background:var(--blue2)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;border:1.5px solid var(--bd);color:var(--tx)}
+.btn.ghost:hover{background:#f0f3f7}
+.btn.rd{background:var(--rd)}
+.btn.gn{background:var(--gn)}
+.btn.or{background:var(--or)}
+.session-box{background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;border-radius:14px;padding:18px;margin-bottom:16px;text-align:center}
+.session-box h2{font-size:14px;margin-bottom:6px;font-weight:600;opacity:.9}
+.session-box .code{font-size:36px;font-weight:900;letter-spacing:6px;font-family:"Courier New",monospace;margin:8px 0}
+.session-box .hint{font-size:11px;opacity:.8}
+.session-box .actions{margin-top:12px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.session-box .actions button{padding:8px 12px;border-radius:8px;border:none;font-weight:700;cursor:pointer;font-family:inherit;font-size:12px;background:rgba(255,255,255,.15);color:#fff}
+.session-box .actions button:hover{background:rgba(255,255,255,.25)}
+.status-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;background:var(--blueL);color:var(--blue)}
+.status-badge.wait{background:#fef3e0;color:#b87400}
+.status-badge.ok{background:#e6f6ea;color:var(--gn)}
+.status-badge.err{background:#fde8e7;color:var(--rd)}
+.log{max-height:200px;overflow-y:auto;font-size:11px;font-family:"Courier New",monospace;background:#0f141d;color:#a8b2c1;border-radius:10px;padding:12px}
+.log div{padding:1px 0;word-break:break-all}
+.log .t{color:#5b6577}
+.log .ok{color:#6ee087}
+.log .er{color:#ff8a8a}
+.log .inf{color:#7dc0ff}
+.tabs{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:7px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--card);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--tx)}
+.tab.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.list-item{display:block;padding:10px 0;border-bottom:1px solid var(--bd)}
+.list-item:last-child{border-bottom:none}
+.list-item::after{content:"";display:table;clear:both}
+.list-item .info{float:left;max-width:65%}
+.list-item .info .name{font-size:13px;font-weight:600}
+.list-item .info .desc{font-size:11px;color:var(--mu);margin-top:2px}
+.list-item > *:last-child{float:right}
+.badge{display:inline-block;padding:3px 8px;border-radius:16px;font-size:10px;font-weight:700;background:var(--blueL);color:var(--blue)}
+.badge.grey{background:rgba(138,149,165,.15);color:var(--mu)}
+.badge.red{background:#fde8e7;color:var(--rd)}
+.badge.green{background:#e6f6ea;color:var(--gn)}
+.badge.orange{background:#fef3e0;color:#b87400}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,45,138,.55);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:#fff;border-radius:18px;padding:22px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center}
+.modal .big-icon{width:70px;height:70px;border-radius:50%;background:var(--blueL);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 14px}
+.modal h2{font-size:18px;margin-bottom:6px}
+.modal .sub{margin-bottom:16px}
+.pin-row{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.pin-row .dot{width:20px;height:20px;border-radius:50%;border:3px solid var(--blue)}
+.pin-row .dot.f{background:var(--blue)}
+.stat-value{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.stat-value.blue{color:var(--blue)}
+.stat-value.green{color:var(--gn)}
+.stat-value.red{color:var(--rd)}
+.stat-label{font-size:11px;color:var(--mu);margin-top:3px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:900px){.grid{grid-template-columns:1fr}.grid-4{grid-template-columns:1fr 1fr}.grid-3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo"><div class="mark">ВТБ</div><div>Операционист · ПК</div></div>
+    <div class="conn off" id="connBadge"><span class="dot"></span><span id="connText">Подключение...</span></div>
+  </div>
+
+  <div class="session-box">
+    <h2>Код сессии для телефона клиента</h2>
+    <div class="code" id="sessCode">—— ——</div>
+    <div class="hint">Откройте на телефоне страницу терминала и введите этот код</div>
+    <div class="actions">
+      <button onclick="newSession()">🔄 Новый код</button>
+      <button onclick="copyCode()">📋 Копировать</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="card-title">Связь с телефоном</div>
+        <div id="statusBox" class="status-badge wait">Ожидание клиента...</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Разделы</div>
+        <div class="tabs" id="tabsBox"></div>
+        <div id="content"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-title">Журнал событий</div>
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Быстрые действия</div>
+        <button class="btn" onclick="nav('kassa')">🛒 Открыть кассу</button>
+        <button class="btn gn" onclick="nav('issueCard')">💳 Выдать карту</button>
+        <button class="btn or" onclick="nav('journal')">📊 Посмотреть журнал</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+// ============================================================
+// КОНФИГ FIREBASE
+// ============================================================
+var firebaseConfig = {
+  apiKey: "AIzaSyCbUVpD7AIxh2ZBkAmZGOj7EXNWLpIL_8",
+  authDomain: "vtb-operator.firebaseapp.com",
+  databaseURL: "https://vtb-operator-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "vtb-operator",
+  storageBucket: "vtb-operator.firebasestorage.app",
+  messagingSenderId: "297366565046",
+  appId: "1:297366565046:web:c33f3fd1e88c2fc3e3b617"
+};
+
+// ==================== ДАННЫЕ ====================
+var DB = {
+  clients: [
+    { id: "K98", name: "Фёдорова Ирина Михайловна", phone: "+7 900 123-45-67", card: "4276 •••• 8842", balance: 24500, pin: "1234", blocked: false },
+    { id: "U16", name: "Белова Светлана Владимировна", phone: "+7 900 234-56-78", card: "4276 •••• 1120", balance: 8720.50, pin: "1111", blocked: false },
+    { id: "N17", name: "Тарасов Юрий Анатольевич", phone: "+7 900 345-67-89", card: "4276 •••• 5567", balance: 153200, pin: "2222", blocked: false },
+    { id: "K21", name: "Егорова Татьяна Сергеевна", phone: "+7 900 456-78-90", card: "4276 •••• 3391", balance: 3200, pin: "3333", blocked: true },
+    { id: "P97", name: "Захарова Людмила Ивановна", phone: "+7 900 567-89-01", card: "4276 •••• 7702", balance: 56700, pin: "4444", blocked: false }
+  ],
+  journal: [
+    { time: "12:40", date: "27.09.2026", client: "Фёдорова И.М.", op: "Оплата картой", sum: -180 },
+    { time: "11:20", date: "27.09.2026", client: "Тарасов Ю.А.", op: "Перевод", sum: -5000 },
+    { time: "10:05", date: "27.09.2026", client: "Белова С.В.", op: "Смена ПИН", sum: 0 }
+  ],
+  shiftOpen: true
+};
+
+var sessionCode = genCode();
+var db = null;
+var requestRef = null;
+var responseRef = null;
+var currentSection = "desk";
+var pendingAmount = 0;
+
+var SECTIONS = [
+  { id: "desk", label: "🏠 Стол" },
+  { id: "kassa", label: "🛒 Касса" },
+  { id: "issueCard", label: "💳 Карта" },
+  { id: "changePin", label: "🔑 ПИН" },
+  { id: "transfer", label: "↗️ Перевод" },
+  { id: "withdraw", label: "💵 Наличные" },
+  { id: "deposit", label: "💰 Приём" },
+  { id: "services", label: "📋 Услуги" },
+  { id: "clients", label: "👤 Клиенты" },
+  { id: "journal", label: "📊 Журнал" },
+  { id: "shift", label: "⏱️ Смена" },
+  { id: "printer", label: "🖨️ Принтер" },
+  { id: "backup", label: "💾 Backup" }
+];
+
+// ==================== УТИЛИТЫ ====================
+function $(id) { return document.getElementById(id); }
+function fmt(n) { return Math.abs(n).toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function genCode() {
+  var a = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  var c = "";
+  for (var i = 0; i < 4; i++) c += a.charAt(Math.floor(Math.random() * a.length));
+  c += "-";
+  for (var j = 0; j < 4; j++) c += a.charAt(Math.floor(Math.random() * a.length));
+  return c;
+}
+function nowTime() { return new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" }); }
+function nowDate() { return new Date().toLocaleDateString("ru-RU"); }
+function esc(s) { if (s === null || s === undefined) return ""; return String(s).replace(/[&<>"']/g, function(c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+function log(text, cls) {
+  var el = $("log");
+  var t = nowTime();
+  var d = document.createElement("div");
+  d.className = cls || "";
+  d.innerHTML = '<span class="t">[' + t + ']</span> ' + text;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+function setConn(online, text) {
+  var b = $("connBadge");
+  b.className = "conn " + (online ? "on" : "off");
+  $("connText").textContent = text;
+}
+function setStatus(cls, text) {
+  var b = $("statusBox");
+  b.className = "status-badge " + cls;
+  b.textContent = text;
+}
+
+// ==================== FIREBASE ====================
+function initFirebase() {
+  if (typeof firebase === "undefined") { setTimeout(initFirebase, 500); return; }
+  try {
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+    requestRef = db.ref("sessions/" + sessionCode + "/request");
+    responseRef = db.ref("sessions/" + sessionCode + "/response");
+
+    responseRef.on("value", function(snap) {
+      var r = snap.val();
+      if (!r) return;
+      handleResponse(r);
+    });
+
+    db.ref("sessions/" + sessionCode + "/terminalOnline").on("value", function(snap) {
+      if (snap.val()) { log("Телефон клиента подключён ✓", "ok"); setStatus("ok", "Клиент подключён ✓"); }
+      else { setStatus("wait", "Ожидание клиента..."); }
+    });
+
+    $("sessCode").textContent = sessionCode;
+    log("Firebase подключён. Код: <b>" + sessionCode + "</b>", "inf");
+    setConn(true, "Firebase OK");
+  } catch (e) {
+    log("Ошибка Firebase: " + e.message, "er");
+    setConn(false, "Ошибка");
+  }
+}
+
+function handleResponse(r) {
+  if (r.type === "pin-set") { log("Клиент установил ПИН ✓", "ok"); closeOverlay(); showSuccess("ПИН установлен!", "Карта оформлена."); }
+  if (r.type === "card-attached") { log("Клиент приложил карту ✓", "ok"); closeOverlay(); showSuccess("Оплата прошла!", "Средства списаны."); addJournal("Оплата картой", "Клиент (касса)", -pendingAmount); }
+  if (r.type === "operation-confirmed") { log("Операция подтверждена ✓", "ok"); closeOverlay(); showSuccess("Операция подтверждена!", "Клиент подтвердил."); }
+  if (r.type === "pin-error") { log("Клиент ошибся с ПИН", "er"); }
+}
+
+function sendRequest(type, data) {
+  if (!requestRef) { alert("Firebase не подключён"); return; }
+  var payload = { type: type, ts: Date.now() };
+  if (data) for (var k in data) payload[k] = data[k];
+  requestRef.set(payload);
+  log("→ Отправлено: " + type, "inf");
+}
+
+function newSession() {
+  sessionCode = genCode();
+  $("sessCode").textContent = sessionCode;
+  requestRef = db.ref("sessions/" + sessionCode + "/request");
+  responseRef = db.ref("sessions/" + sessionCode + "/response");
+  log("Новый код: <b>" + sessionCode + "</b>", "inf");
+}
+function copyCode() {
+  if (navigator.clipboard) navigator.clipboard.writeText(sessionCode);
+  log("Код скопирован", "ok");
+}
+
+// ==================== МОДАЛКИ ====================
+function openOverlay(html) {
+  closeOverlay();
+  var o = document.createElement("div");
+  o.className = "overlay";
+  o.id = "ovl";
+  o.innerHTML = '<div class="modal">' + html + '</div>';
+  document.body.appendChild(o);
+}
+function closeOverlay() { var o = $("ovl"); if (o) o.remove(); }
+function showSuccess(title, text) {
+  openOverlay('<div class="big-icon" style="background:#e6f6ea;color:#21a038">✓</div><h2>' + title + '</h2><p class="sub">' + text + '</p><button class="btn gn" onclick="closeOverlay()">Готово</button>');
+}
+function showWait(title, text) {
+  openOverlay('<div class="big-icon">⏳</div><h2>' + title + '</h2><p class="sub">' + text + '</p><div class="pin-row"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><button class="btn ghost" onclick="closeOverlay()">Отмена</button>');
+}
+
+function addJournal(op, client, sum) {
+  DB.journal.unshift({ time: nowTime(), date: nowDate(), client: client, op: op, sum: sum });
+}
+
+// ==================== НАВИГАЦИЯ ====================
+function renderTabs() {
+  var h = "";
+  SECTIONS.forEach(function(s) {
+    h += '<button class="tab' + (s.id === currentSection ? ' active' : '') + '" onclick="nav(\'' + s.id + '\')">' + s.label + '</button>';
+  });
+  $("tabsBox").innerHTML = h;
+}
+
+function nav(section) {
+  currentSection = section;
+  renderTabs();
+  var r = {
+    desk: renderDesk, kassa: renderKassa, issueCard: renderIssueCard,
+    changePin: renderChangePin, transfer: renderTransfer, withdraw: renderWithdraw,
+    deposit: renderDeposit, services: renderServices, clients: renderClients,
+    journal: renderJournal, shift: renderShift, printer: renderPrinter, backup: renderBackup
+  };
+  if (r[section]) r[section]();
+}
+
+// ==================== РАБОЧИЙ СТОЛ ====================
+function renderDesk() {
+  var active = DB.clients.filter(function(c) { return !c.blocked; }).length;
+  var blocked = DB.clients.filter(function(c) { return c.blocked; }).length;
+  var total = DB.clients.reduce(function(s, c) { return s + c.balance; }, 0);
+  var today = nowDate();
+  var count = 0, income = 0, expense = 0;
+  DB.journal.forEach(function(j) {
+    if (j.date === today) { count++; if (j.sum > 0) income += j.sum; if (j.sum < 0) expense += j.sum; }
+  });
+
+  var recent = DB.journal.slice(0, 5).map(function(j) {
+    var cls = j.sum < 0 ? "red" : (j.sum > 0 ? "green" : "grey");
+    var txt = j.sum === 0 ? "—" : (j.sum > 0 ? "+" : "−") + fmt(j.sum) + " ₽";
+    return '<div class="list-item"><div class="info"><div class="name">' + esc(j.op) + '</div><div class="desc">' + esc(j.client) + ' · ' + esc(j.time) + '</div></div><div class="badge ' + cls + '">' + txt + '</div></div>';
+  }).join("");
+
+  $("content").innerHTML =
+    '<h1>Рабочий стол</h1>' +
+    '<p class="sub">' + new Date().toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }) + '</p>' +
+    '<div class="grid-4">' +
+      '<div class="card"><div class="stat-value">' + DB.clients.length + '</div><div class="stat-label">Клиентов</div></div>' +
+      '<div class="card"><div class="stat-value green">' + active + '</div><div class="stat-label">Активных</div></div>' +
+      '<div class="card"><div class="stat-value red">' + blocked + '</div><div class="stat-label">Заблок.</div></div>' +
+      '<div class="card"><div class="stat-value blue">' + fmt(total) + ' ₽</div><div class="stat-label">Общий баланс</div></div>' +
+    '</div>' +
+    '<div class="grid-4" style="margin-top:12px">' +
+      '<div class="card"><div class="stat-value">' + count + '</div><div class="stat-label">Операций сегодня</div></div>' +
+      '<div class="card"><div class="stat-value green">+' + fmt(income) + ' ₽</div><div class="stat-label">Приход</div></div>' +
+      '<div class="card"><div class="stat-value red">' + fmt(expense) + ' ₽</div><div class="stat-label">Расход</div></div>' +
+      '<div class="card"><div class="stat-value">' + (DB.shiftOpen ? '🟢' : '🔴') + '</div><div class="stat-label">' + (DB.shiftOpen ? 'Смена открыта' : 'Смена закрыта') + '</div></div>' +
+    '</div>' +
+    '<div class="card" style="margin-top:12px"><div class="card-title">Последние операции</div>' + recent + '</div>';
+}
+
+// ==================== КАССА ====================
+function renderKassa() {
+  $("content").innerHTML =
+    '<h1>Касса</h1>' +
+    '<p class="sub">Введите сумму — клиент приложит карту к телефону</p>' +
+    '<div class="card">' +
+      '<label>Сумма, ₽</label>' +
+      '<input id="kSum" type="number" placeholder="0" style="font-size:28px;font-weight:800;text-align:center;padding:18px">' +
+      '<button class="btn gn" onclick="doKassa()" style="padding:16px;font-size:16px">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doKassa() {
+  var sum = parseFloat($("kSum").value || 0);
+  if (sum <= 0) { alert("Введите сумму"); return; }
+  pendingAmount = sum;
+  sendRequest("payment", { sum: sum });
+  showWait("Ожидание карты", "Клиент прикладывает карту... " + fmt(sum) + " ₽");
+}
+
+// ==================== ВЫДАЧА КАРТЫ ====================
+function renderIssueCard() {
+  $("content").innerHTML =
+    '<h1>Выдача карты</h1>' +
+    '<p class="sub">Клиент задаст ПИН на телефоне</p>' +
+    '<div class="card">' +
+      '<label>ФИО клиента</label>' +
+      '<input id="icName" placeholder="Иванов Иван Иванович">' +
+      '<label>Телефон</label>' +
+      '<input id="icPhone" placeholder="+7 900 000-00-00">' +
+      '<label>Тип карты</label>' +
+      '<select id="icType"><option>Дебетовая карта ВТБ</option><option>Кредитная карта ВТБ</option><option>Мультикарта ВТБ</option><option>Премиальная карта ВТБ</option></select>' +
+      '<label>Начальный баланс, ₽</label>' +
+      '<input id="icBalance" type="number" value="0">' +
+      '<button class="btn gn" onclick="doIssueCard()">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doIssueCard() {
+  var name = $("icName").value.trim() || "Новый клиент";
+  pendingAmount = 0;
+  sendRequest("issue-card", { name: name });
+  showWait("Ожидание клиента", "Клиент придумывает ПИН на телефоне...");
+}
+
+// ==================== СМЕНА ПИН ====================
+function renderChangePin() {
+  $("content").innerHTML =
+    '<h1>Смена ПИН-кода</h1>' +
+    '<p class="sub">Клиент вводит старый и новый ПИН на телефоне</p>' +
+    '<div class="card">' +
+      '<button class="btn gn" onclick="doChangePin()">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doChangePin() {
+  pendingAmount = 0;
+  sendRequest("change-pin", {});
+  showWait("Смена ПИН", "Клиент вводит старый и новый ПИН...");
+}
+
+// ==================== ПЕРЕВОД ====================
+function renderTransfer() {
+  $("content").innerHTML =
+    '<h1>Перевод</h1>' +
+    '<div class="card">' +
+      '<label>Сумма, ₽</label>' +
+      '<input id="trSum" type="number" placeholder="0" style="font-size:20px;font-weight:800;text-align:center">' +
+      '<label>Карта получателя</label>' +
+      '<input id="trTo" placeholder="0000 0000 0000 0000">' +
+      '<button class="btn gn" onclick="doTransfer()">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doTransfer() {
+  var sum = parseFloat($("trSum").value || 0);
+  var to = $("trTo").value.trim();
+  if (sum <= 0 || to.length < 4) { alert("Заполните поля"); return; }
+  pendingAmount = sum;
+  sendRequest("transfer", { sum: sum, to: to });
+  showWait("Ожидание подтверждения", "Перевод " + fmt(sum) + " ₽ на " + to);
+}
+
+// ==================== ВЫДАЧА НАЛИЧНЫХ ====================
+function renderWithdraw() {
+  $("content").innerHTML =
+    '<h1>Выдача наличных</h1>' +
+    '<div class="card">' +
+      '<label>Сумма, ₽ (кратно 100)</label>' +
+      '<input id="wdSum" type="number" step="100" placeholder="0" style="font-size:20px;font-weight:800;text-align:center">' +
+      '<button class="btn gn" onclick="doWithdraw()">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doWithdraw() {
+  var sum = parseFloat($("wdSum").value || 0);
+  if (sum <= 0) { alert("Введите сумму"); return; }
+  pendingAmount = sum;
+  sendRequest("withdraw", { sum: sum });
+  showWait("Ожидание клиента", "Выдача " + fmt(sum) + " ₽");
+}
+
+// ==================== ПРИЁМ НАЛИЧНЫХ ====================
+function renderDeposit() {
+  $("content").innerHTML =
+    '<h1>Приём наличных</h1>' +
+    '<div class="card">' +
+      '<label>Сумма, ₽</label>' +
+      '<input id="dpSum" type="number" placeholder="0" style="font-size:20px;font-weight:800;text-align:center">' +
+      '<button class="btn gn" onclick="doDeposit()">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doDeposit() {
+  var sum = parseFloat($("dpSum").value || 0);
+  if (sum <= 0) { alert("Введите сумму"); return; }
+  pendingAmount = sum;
+  sendRequest("deposit", { sum: sum });
+  showWait("Ожидание клиента", "Пополнение " + fmt(sum) + " ₽");
+}
+
+// ==================== УСЛУГИ ====================
+function renderServices() {
+  var items = [
+    { id: "credits", ic: "💼", n: "Кредиты" },
+    { id: "deposits", ic: "🏦", n: "Вклады" },
+    { id: "utility", ic: "🏠", n: "ЖКХ" },
+    { id: "fines", ic: "🚔", n: "Штрафы" },
+    { id: "currency", ic: "💱", n: "Валюта" },
+    { id: "cash", ic: "🚚", n: "Инкассация" }
+  ];
+  var cards = items.map(function(i) {
+    return '<div class="card" style="cursor:pointer" onclick="openService(\'' + i.id + '\',\'' + i.n + '\')"><div style="font-size:28px;margin-bottom:6px">' + i.ic + '</div><h2 style="font-size:15px">' + i.n + '</h2></div>';
+  }).join("");
+  $("content").innerHTML = '<h1>Прочие услуги</h1><div class="grid-3">' + cards + '</div>';
+}
+function openService(id, name) {
+  $("content").innerHTML =
+    '<button class="btn ghost" onclick="nav(\'services\')" style="width:auto;padding:8px 14px;margin-bottom:12px">← Назад</button>' +
+    '<h1>' + name + '</h1>' +
+    '<div class="card">' +
+      '<label>Сумма, ₽</label>' +
+      '<input id="svSum" type="number" placeholder="0" style="font-size:20px;font-weight:800;text-align:center">' +
+      '<button class="btn gn" onclick="doService(\'' + id + '\')">📤 Отправить клиенту</button>' +
+    '</div>';
+}
+function doService(id) {
+  var sum = parseFloat($("svSum").value || 0);
+  if (sum <= 0) { alert("Введите сумму"); return; }
+  pendingAmount = sum;
+  sendRequest("service", { serviceId: id, sum: sum });
+  showWait("Ожидание клиента", "Операция на " + fmt(sum) + " ₽");
+}
+
+// ==================== КЛИЕНТЫ ====================
+function renderClients() {
+  var h = DB.clients.map(function(c) {
+    var cls = c.blocked ? "red" : "green";
+    var txt = c.blocked ? "Заблок." : "Активна";
+    return '<div class="list-item"><div class="info"><div class="name">' + esc(c.name) + ' <span class="badge ' + cls + '">' + txt + '</span></div><div class="desc">' + c.card + ' · ' + esc(c.phone) + ' · ' + fmt(c.balance) + ' ₽</div></div><button class="btn sm" style="width:auto;padding:6px 12px;font-size:12px;margin:0" onclick="toggleBlock(\'' + c.id + '\')">' + (c.blocked ? '🔓' : '🔒') + '</button></div>';
+  }).join("");
+  $("content").innerHTML = '<h1>Клиенты</h1><div class="card">' + h + '</div>';
+}
+function toggleBlock(id) {
+  var c = DB.clients.filter(function(x) { return x.id === id; })[0];
+  c.blocked = !c.blocked;
+  addJournal(c.blocked ? "Блокировка" : "Разблокировка", c.name, 0);
+  renderClients();
+}
+
+// ==================== ЖУРНАЛ ====================
+function renderJournal() {
+  var h = DB.journal.map(function(j) {
+    var cls = j.sum < 0 ? "red" : (j.sum > 0 ? "green" : "grey");
+    var txt = j.sum === 0 ? "—" : (j.sum > 0 ? "+" : "−") + fmt(j.sum) + " ₽";
+    return '<div class="list-item"><div class="info"><div class="name">' + esc(j.op) + '</div><div class="desc">' + esc(j.client) + ' · ' + esc(j.date) + ' ' + esc(j.time) + '</div></div><div class="badge ' + cls + '">' + txt + '</div></div>';
+  }).join("");
+  $("content").innerHTML = '<h1>Журнал</h1><p class="sub">Всего: ' + DB.journal.length + '</p><div class="card">' + (h || '<div style="color:var(--mu);text-align:center;padding:20px">Пока нет операций</div>') + '</div>';
+}
+
+// ==================== СМЕНА ====================
+function renderShift() {
+  var today = nowDate();
+  var count = 0, income = 0, expense = 0;
+  DB.journal.forEach(function(j) {
+    if (j.date === today) { count++; if (j.sum > 0) income += j.sum; if (j.sum < 0) expense += j.sum; }
+  });
+  $("content").innerHTML =
+    '<h1>Смена</h1>' +
+    '<div class="card" style="background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff">' +
+      '<h2 style="margin-bottom:12px">' + (DB.shiftOpen ? '● Смена открыта' : '○ Смена закрыта') + '</h2>' +
+      '<div>Операций: <b>' + count + '</b></div>' +
+      '<div>Приход: <b>+' + fmt(income) + ' ₽</b></div>' +
+      '<div>Расход: <b>' + fmt(expense) + ' ₽</b></div>' +
+      '<div style="margin-top:8px;font-size:18px">Итого: <b>' + fmt(income + expense) + ' ₽</b></div>' +
+    '</div>' +
+    '<div class="card">' +
+      (DB.shiftOpen
+        ? '<button class="btn rd" onclick="DB.shiftOpen=false;renderShift();addJournal(\'Закрытие\',\'—\',0)">🔒 Закрыть смену</button>'
+        : '<button class="btn gn" onclick="DB.shiftOpen=true;renderShift();addJournal(\'Открытие\',\'—\',0)">▶️ Открыть смену</button>') +
+      '<button class="btn ghost" onclick="printZ()">🖨️ Z-отчёт</button>' +
+    '</div>';
+}
+function printZ() {
+  var today = nowDate();
+  var count = 0, income = 0, expense = 0;
+  DB.journal.forEach(function(j) {
+    if (j.date === today) { count++; if (j.sum > 0) income += j.sum; if (j.sum < 0) expense += j.sum; }
+  });
+  alert("Z-ОТЧЁТ\nДата: " + today + "\nОпераций: " + count + "\nПриход: +" + fmt(income) + " ₽\nРасход: " + fmt(expense) + " ₽\nИтого: " + fmt(income + expense) + " ₽");
+}
+
+// ==================== ПРИНТЕР ====================
+function renderPrinter() {
+  var usb = typeof navigator !== "undefined" && "usb" in navigator;
+  $("content").innerHTML =
+    '<h1>Принтер</h1>' +
+    '<p class="sub">Xprinter XP-365B</p>' +
+    '<div class="card">' +
+      '<div class="list-item"><div class="info"><div class="name">WebUSB</div></div><div class="badge ' + (usb ? 'green' : 'orange') + '">' + (usb ? 'Доступен' : 'Нет') + '</div></div>' +
+      '<button class="btn gn" onclick="alert(\'Печать тестового чека\')" style="margin-top:12px">🖨️ Тестовый чек</button>' +
+      '<button class="btn ghost" onclick="window.print()">🖨️ Системная печать</button>' +
+    '</div>';
+}
+
+// ==================== BACKUP ====================
+function renderBackup() {
+  $("content").innerHTML =
+    '<h1>Резервные копии</h1>' +
+    '<div class="card">' +
+      '<button class="btn gn" onclick="exportData()">💾 Скачать JSON</button>' +
+      '<button class="btn ghost" onclick="exportCSV()">📊 Экспорт CSV</button>' +
+    '</div>' +
+    '<div class="card">' +
+      '<input type="file" id="impFile" accept=".json" onchange="importData(this)" style="display:none">' +
+      '<button class="btn" onclick="$(\'impFile\').click()">📂 Загрузить из файла</button>' +
+    '</div>';
+}
+function exportData() {
+  var d = { clients: DB.clients, journal: DB.journal };
+  var b = new Blob([JSON.stringify(d, null, 2)], { type: "application/json" });
+  var u = URL.createObjectURL(b);
+  var a = document.createElement("a");
+  a.href = u; a.download = "vtb-backup.json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(u);
+}
+function exportCSV() {
+  var rows = [["Дата","Время","Клиент","Операция","Сумма"]];
+  DB.journal.forEach(function(j) { rows.push([j.date || "", j.time || "", j.client || "", j.op || "", j.sum || 0]); });
+  var csv = rows.map(function(r) { return r.map(function(c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(";"); }).join("\n");
+  var b = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+  var u = URL.createObjectURL(b);
+  var a = document.createElement("a");
+  a.href = u; a.download = "vtb-journal.csv";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(u);
+}
+function importData(inp) {
+  var f = inp.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function(e) {
+    try {
+      var d = JSON.parse(e.target.result);
+      if (d.clients) DB.clients = d.clients;
+      if (d.journal) DB.journal = d.journal;
+      alert("Импортировано");
+      nav("desk");
+    } catch (err) { alert("Ошибка: " + err.message); }
+  };
+  r.readAsText(f);
+}
+
+// ==================== СТАРТ ====================
+renderTabs();
+nav("desk");
+setTimeout(initFirebase, 300);
+log("Откройте на телефоне страницу терминала и введите код: <b>" + sessionCode + "</b>", "inf");
+</script>
+</body>
+</html>
